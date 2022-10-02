@@ -1,0 +1,11 @@
+{
+    "user":{
+        "userName":"test",
+        "password":"test",
+        "email": "",
+        "teamID": "test",
+        "role": "admin",
+        "continent": "NA",
+        "region":"otro"
+    }
+}
