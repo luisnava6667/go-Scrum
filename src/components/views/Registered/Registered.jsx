@@ -5,7 +5,7 @@ const Registered = () => {
     const {teamID} = useParams()
     return (
     <div>
-        
+        tu team es {teamID}
     </div>
   )
 }

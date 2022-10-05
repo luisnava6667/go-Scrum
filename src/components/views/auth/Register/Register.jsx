@@ -9,12 +9,12 @@ import { Switch, FormControlLabel } from "@mui/material";
 export const Register = () => {
   const [data, setData] = useState();
   const navigate = useNavigate();
+
   useEffect(() => {
-    fetch("//localhost:4000/auth")
+    fetch(`https://goscrum-api.alkemy.org/auth/data`)
       .then((response) => response.json())
       .then((data) => setData(data.result));
   }, []);
-  // console.log({data});
 
   const initialValues = {
     userName: "",
@@ -26,28 +26,30 @@ export const Register = () => {
     region: "",
     switch: false,
   };
-  const required = "* Este campo es requerido";
 
-  const validationSchema = Yup.object().shape({
-    userName: Yup.string()
-      .min(4, "La cantidad minima de caracteres es 6")
-      .required(required),
-    password: Yup.string().required(required),
-    email: Yup.string().email("Debe ser un email valido").required(required),
-    // teamID: Yup.string().required(required),
-    role: Yup.string().required(required),
-    continent: Yup.string().required(required),
-    region: Yup.string().required(required),
-  });
+  const required = "* Campo obligatorio";
+
+  const validationSchema = () =>
+    Yup.object().shape({
+      userName: Yup.string()
+        .min(4, "La cantidad mínima de caracteres es 4")
+        .required(required),
+      password: Yup.string().required(required),
+      email: Yup.string().email("Debe ser un email válido").required(required),
+      role: Yup.string().required(required),
+      continent: Yup.string().required(required),
+      region: Yup.string().required(required),
+    });
+
   const handleChangeContinent = (value) => {
     setFieldValue("continent", value);
-    if (value !== "America") {
-      setFieldValue("region", "");
-    }
+    if (value !== "America") setFieldValue("region", "Otro");
   };
+
   const onSubmit = () => {
     const teamID = !values.teamID ? uuidv4() : values.teamID;
-    fetch("//localhost:4004/user", {
+
+    fetch(`https://goscrum-api.alkemy.org/auth/register`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -62,38 +64,41 @@ export const Register = () => {
           continent: values.continent,
           region: values.region,
         },
-      })
-        .then((response) => response.json())
-        .then((data) =>
-          navigate("/registered/" + data?.result?.user?.teamID, {
-            replace: true,
-          })
-        ),
-    });
+      }),
+    })
+      .then((response) => response.json())
+      .then((data) =>
+        navigate("/registered/" + data?.result?.user?.teamID, {
+          replace: true,
+        })
+      );
   };
-  const formik = useFormik({ initialValues, onSubmit, validationSchema });
+
+  const formik = useFormik({ initialValues, validationSchema, onSubmit });
+
   const {
-    values,
-    errors,
-    handleChange,
     handleSubmit,
+    handleChange,
+    errors,
     touched,
     handleBlur,
+    values,
     setFieldValue,
   } = formik;
+
   return (
     <div className="auth">
       <form onSubmit={handleSubmit}>
         <h1>Registro</h1>
         <div>
-          <label>Nombre del Usuario</label>
+          <label>Nombre de usuario</label>
           <input
             type="text"
             name="userName"
-            value={values.userName}
             onChange={handleChange}
+            value={values.userName}
+            className={errors.userName && touched.userName ? "error" : ""}
             onBlur={handleBlur}
-            className={errors.userName && touched.userName ? "error" : null}
           />
           {errors.userName && touched.userName && (
             <span className="error-message">{errors.userName}</span>
@@ -104,24 +109,24 @@ export const Register = () => {
           <input
             type="password"
             name="password"
-            value={values.password}
             onChange={handleChange}
+            value={values.password}
+            className={errors.password && touched.password ? "error" : ""}
             onBlur={handleBlur}
-            className={errors.password && touched.password ? "error" : null}
           />
           {errors.password && touched.password && (
             <span className="error-message">{errors.password}</span>
           )}
         </div>
         <div>
-          <label>Email del Usuario</label>
+          <label>Email</label>
           <input
             type="email"
             name="email"
-            value={values.email}
             onChange={handleChange}
+            value={values.email}
+            className={errors.email && touched.email ? "error" : ""}
             onBlur={handleBlur}
-            className={errors.email && touched.email ? "error" : null}
           />
           {errors.email && touched.email && (
             <span className="error-message">{errors.email}</span>
@@ -138,11 +143,11 @@ export const Register = () => {
               color="secondary"
             />
           }
-          label="¿Perteneces a un equipo?"
+          label="Pertenecés a un equipo ya creado"
         />
         {values.switch && (
           <div>
-            <label>Team ID</label>
+            <label>Por favor, introduce el identificador de equipo</label>
             <input
               type="text"
               name="teamID"
@@ -157,13 +162,13 @@ export const Register = () => {
             name="role"
             onChange={handleChange}
             value={values.role}
+            className={errors.role && touched.role ? "error" : ""}
             onBlur={handleBlur}
-            className={errors.role && touched.role ? "error" : null}
           >
-            <option value="">Seleccionar</option>
-            {data?.Rol.map((op) => (
-              <option value={op} key={op}>
-                {op}
+            <option value="">Seleccionar rol...</option>
+            {data?.Rol?.map((option) => (
+              <option value={option} key={option}>
+                {option}
               </option>
             ))}
           </select>
@@ -175,15 +180,17 @@ export const Register = () => {
           <label>Continente</label>
           <select
             name="continent"
-            onChange={(e) => handleChangeContinent(e.currentTarget.value)}
+            onChange={(event) =>
+              handleChangeContinent(event.currentTarget.value)
+            }
             value={values.continent}
+            className={errors.continent && touched.continent ? "error" : ""}
             onBlur={handleBlur}
-            className={errors.continent && touched.continent ? "error" : null}
           >
-            <option value="">Seleccionar</option>
-            {data?.continente.map((op) => (
-              <option value={op} key={op}>
-                {op}
+            <option value="">Seleccionar continente...</option>
+            {data?.continente?.map((option) => (
+              <option value={option} key={option}>
+                {option}
               </option>
             ))}
           </select>
@@ -193,18 +200,18 @@ export const Register = () => {
         </div>
         {values.continent === "America" && (
           <div>
-            <label>Region</label>
+            <label>Región</label>
             <select
               name="region"
               onChange={handleChange}
-              value={values.region}
               onBlur={handleBlur}
-              className={errors.region && touched.region ? "error" : null}
+              value={values.region}
+              className={errors.region && touched.region ? "error" : ""}
             >
-              <option value="">Seleccionar</option>
-              {data?.region.map((op) => (
-                <option value={op} key={op}>
-                  {op}
+              <option value="">Seleccionar región...</option>
+              {data?.region?.map((option) => (
+                <option value={option} key={option}>
+                  {option}
                 </option>
               ))}
             </select>
@@ -217,7 +224,7 @@ export const Register = () => {
           <button type="submit">Enviar</button>
         </div>
         <div>
-          <Link to="/login">Iniciar Sesion</Link>
+          <Link to="/login">Ir a Iniciar sesión</Link>
         </div>
       </form>
     </div>
