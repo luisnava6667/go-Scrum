@@ -6,6 +6,8 @@ import { Tasks } from "./components/views/Tasks/Tasks";
 import { Routes, Route, Navigate, useLocation } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
 import Registered from "./components/views/Registered/Registered";
+import { Donate } from "./components/views/Donate/Donate";
+
 const Error404 = lazy(() => import("./components/views/Error404/Error404"));
 const RequireAuth = ({ children }) => {
   if (!localStorage.getItem("token")) {
@@ -39,6 +41,20 @@ export const App = () => {
               variant={PageTransition}
             >
               <Login />
+            </motion.div>
+          }
+        />
+        <Route
+          path="/donate"
+          element={
+            <motion.div
+              className="page"
+              initial="out"
+              animate="in"
+              exit="out"
+              variant={PageTransition}
+            >
+              <Donate />
             </motion.div>
           }
         />
