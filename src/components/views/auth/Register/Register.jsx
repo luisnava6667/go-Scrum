@@ -1,10 +1,14 @@
-import React, { useEffect, useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useFormik } from "formik";
-import "../Auth.styles.css";
-import { Link, useNavigate } from "react-router-dom";
-import * as Yup from "yup";
+import { Link } from "react-router-dom";
 import { v4 as uuidv4 } from "uuid";
 import { Switch, FormControlLabel } from "@mui/material";
+import { useNavigate } from "react-router-dom";
+import "../Auth.styles.css";
+import * as Yup from "yup";
+
+// const {CREATE_APP_ENDPOINT : END_POINT} = process.env
+
 
 export const Register = () => {
   const [data, setData] = useState();
@@ -15,6 +19,7 @@ export const Register = () => {
       .then((response) => response.json())
       .then((data) => setData(data.result));
   }, []);
+  console.log(data);
 
   const initialValues = {
     userName: "",
@@ -109,6 +114,7 @@ export const Register = () => {
           <input
             type="password"
             name="password"
+            autoComplete="on"
             onChange={handleChange}
             value={values.password}
             className={errors.password && touched.password ? "error" : ""}

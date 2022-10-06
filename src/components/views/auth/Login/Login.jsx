@@ -1,54 +1,79 @@
 import React from "react";
-import {useFormik} from 'formik';
-import {Link, useNavigate} from 'react-router-dom';
-import '../Auth.styles.css';
+import { useFormik } from "formik";
+import { Link, useNavigate } from "react-router-dom";
+import * as Yup from "yup";
+import { swal } from "../../../../utils/swal";
+import "../Auth.styles.css";
+const { REACT_APP_API_URL } = process.env;
+
 const Login = () => {
   const navigate = useNavigate();
   const initialValues = {
-    email: "",
+    userName: "",
     password: "",
-  }
-  const validate = values =>{
-    const errors = {};
-    if(!values.email){
-      errors.email = "El email es obligatorio";
-    }
-    if(!values.password){
-      errors.password = "La contraseña es requerida";
-    }
-    return errors;
-  }
-  // const [email, setEmail] = useState("");
-  // const [password, setPassword] = useState("");
-  const onSubmit = () => {
-   localStorage.setItem("logged", 'yes');
-   navigate('/', { replace: true });
   };
-  const formik = useFormik({ initialValues, validate, onSubmit });
-  const { values, errors, handleChange, handleSubmit } = formik;
+  const validationSchema = () =>
+    Yup.object().shape({
+      userName: Yup.string()
+        .min(4, "La cantidad mínima de caracteres es 4")
+        .required("El nombre de usuario es requerido"),
+      password: Yup.string().required("La contraseña es requerida"),
+    });
+
+  const onSubmit = () => {
+    fetch(`${REACT_APP_API_URL}auth/login`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        userName: values.userName,
+        password: values.password,
+      }),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.status_code === 200) {
+          localStorage.setItem("token", data?.result?.token);
+          // localStorage.setItem("userName", data?.result?.user.userName);
+          navigate("/", { replace: true });
+        } else {
+         swal();
+        }
+      });
+  };
+  const formik = useFormik({ initialValues, validationSchema, onSubmit });
+
+  const { handleSubmit, handleChange, errors, handleBlur, touched, values } =
+    formik;
   return (
     <div className="auth">
       <form onSubmit={handleSubmit}>
         <h1>Iniciar Sesión</h1>
         <div>
-          <label>Email</label>
+          <label>Nombre de Usuario</label>
           <input
-            type="email"
-            name="email"
-            value={values.email}
+            type="text"
+            name="userName"
+            value={values.userName}
             onChange={handleChange}
+            onBlur={handleBlur}
+            className={errors.userName && touched.userName ? "error" : ""}
           />
-          {errors.email ? <div>{errors.email}</div> : null}
+          {errors.userName && touched.userName && <div>{errors.userName}</div>}
         </div>
         <div>
           <label>Contraseña</label>
           <input
             type="password"
             name="password"
+            autoComplete="on"
             value={values.password}
             onChange={handleChange}
+            onBlur={handleBlur}
+            className={errors.password && touched.password ? "error" : ""}
           />
-          {errors.password ? <div>{errors.password}</div> : null}
+          {errors.password && touched.password && <div>{errors.password}</div>}
         </div>
         <div>
           <button type="submit">Enviar</button>

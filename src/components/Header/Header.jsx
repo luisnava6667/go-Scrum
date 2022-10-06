@@ -1,12 +1,12 @@
 import React from "react";
 import "./Header.styles.css";
-import {useNavigate} from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 const Header = () => {
   const navigate = useNavigate();
   const handleLogout = () => {
-    localStorage.removeItem("logged");
+    localStorage.removeItem("token");
     navigate("/login", { replace: true });
-  }
+  };
   return (
     <header>
       <img src="/img/goscrum.png" alt="logo" />

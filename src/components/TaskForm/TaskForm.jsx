@@ -1,42 +1,80 @@
 import React from "react";
 import "./TaskForm.styles.css";
 import { useFormik } from "formik";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import * as Yup from "yup";
+const { REACT_APP_API_URL } = process.env;
 const TaskForm = () => {
   const initialValues = {
     title: "",
     status: "",
-    priority: "",
+    descriptionimportance: "",
     description: "",
   };
 
   const onSubmit = () => {
-    alert();
+    const { title, status, importance, description } = values;
+    fetch(`${REACT_APP_API_URL}task`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: 'Bearer ' + localStorage.getItem('token'),
+      },
+      body: JSON.stringify({
+        task: {
+          title,
+          status,
+          importance,
+          description,
+        },
+      }),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        resetForm();
+        toast("Tu tarea se creo");
+      });
   };
-  const required = "* Este campo es requerido";
-  const validationSchema = Yup.object().shape({
-    title: Yup.string()
-      .min(6, "La cantidad minima de caracteres es 6")
-      .required(required),
-    status: Yup.string().required(required),
-    priority: Yup.string().required(required),
-  });
-  const formik = useFormik({ initialValues, onSubmit, validationSchema });
-  const { handleChange, handleSubmit, errors, touched, handleBlur } = formik;
+
+  const required = "* Campo obligatorio";
+
+  const validationSchema = () =>
+    Yup.object().shape({
+      title: Yup.string()
+        .min(6, "La cantidad mínima de caracteres es 6")
+        .required(required),
+      status: Yup.string().required(required),
+      description: Yup.string().required(required),
+      importance: Yup.string().required(required),
+    });
+
+  const formik = useFormik({ initialValues, validationSchema, onSubmit });
+
+  const {
+    handleSubmit,
+    handleChange,
+    errors,
+    touched,
+    handleBlur,
+    values,
+    resetForm,
+  } = formik;
+
   return (
     <section className="task-form">
-      <h2>Crear Tarea</h2>
-      <p>Crea tus Tareas</p>
+      <h2>Crear tarea</h2>
+      <p>Crea tus tareas</p>
       <form onSubmit={handleSubmit}>
         <div>
           <div>
             <input
-              type="text"
               name="title"
               onChange={handleChange}
-              placeholder="Titiulo"
               onBlur={handleBlur}
-              className={errors.title && touched.title ? "error" : null}
+              placeholder="Título"
+              className={errors.title && touched.title ? "error" : ""}
+              value={values.title}
             />
             {errors.title && touched.title && (
               <span className="error-message">{errors.title}</span>
@@ -45,14 +83,15 @@ const TaskForm = () => {
           <div>
             <select
               name="status"
+              className={errors.status && touched.status ? "error" : ""}
               onChange={handleChange}
               onBlur={handleBlur}
-              className={errors.status && touched.status ? "error" : null}
+              value={values.status}
             >
-              <option value="">Seleccionar una prioridad</option>
-              <option value="new">Nueva</option>
-              <option value="inProcess">En Proceso</option>
-              <option value="finished">Finalizada</option>
+              <option value="">Seleccionar un estado</option>
+              <option value="NEW">Nueva</option>
+              <option value="IN PROGRESS">En proceso</option>
+              <option value="FINISHED">Teminada</option>
             </select>
             {errors.status && touched.status && (
               <span className="error-message">{errors.status}</span>
@@ -60,18 +99,19 @@ const TaskForm = () => {
           </div>
           <div>
             <select
-              name="priority"
+              name="importance"
               onChange={handleChange}
               onBlur={handleBlur}
-              className={errors.priority && touched.priority ? "error" : null}
+              className={errors.importance && touched.importance ? "error" : ""}
+              value={values.importance}
             >
-              <option value="">Seleccionar un estado</option>
-              <option value="low">Baja</option>
-              <option value="medium">Media</option>
-              <option value="high">Alta</option>
+              <option value="">Seleccionar una prioridad</option>
+              <option value="LOW">Baja</option>
+              <option value="MEDIUM">Media</option>
+              <option value="HIGH">Alta</option>
             </select>
-            {errors.priority && touched.priority && (
-              <span className="error-message">{errors.priority}</span>
+            {errors.importance && touched.importance && (
+              <span className="error-message">{errors.importance}</span>
             )}
           </div>
         </div>
@@ -79,11 +119,20 @@ const TaskForm = () => {
           <textarea
             name="description"
             onChange={handleChange}
-            placeholder="Descripcion..."
-          ></textarea>
+            placeholder="Descripción"
+            onBlur={handleBlur}
+            className={errors.description && touched.description ? "error" : ""}
+            value={values.description}
+          />
+        </div>
+        <div>
+          {errors.description && touched.description && (
+            <span className="error-message">{errors.description}</span>
+          )}
         </div>
         <button type="submit">Crear</button>
       </form>
+      <ToastContainer />
     </section>
   );
 };
