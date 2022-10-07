@@ -6,7 +6,7 @@ import Header from "../../Header/Header";
 import "./Tasks.styles.css";
 import Card from "../../Card/Card.jsx";
 import TaskForm from "../../TaskForm/TaskForm";
-import { useSelector, useDispatch} from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import debounce from "lodash.debounce";
 import {
   Radio,
@@ -14,13 +14,16 @@ import {
   FormControl,
   FormControlLabel,
 } from "@mui/material";
-import { getTasks, deleteTask, editTaskStatus  } from "../../../store/actions/taskActions";
-// const { REACT_APP_API_URL } = process.env;
+import {
+  getTasks,
+  deleteTask,
+  editTaskStatus,
+} from "../../../store/actions/taskActions";
 
 export const Tasks = () => {
   const [list, setList] = useState(null);
   const [renderList, setRenderList] = useState(null);
-  const [tasksfromWho, setTasksfromWho] = useState("All");
+  const [tasksfromWho, setTasksfromWho] = useState("ALL");
   const [search, setSearch] = useState("");
   const { isPhone } = useResize();
   const dispatch = useDispatch();
@@ -30,7 +33,7 @@ export const Tasks = () => {
   const { tasks, error, loading } = useSelector((state) => {
     return state.tasksReducer;
   });
- 
+
   useEffect(() => {
     if (tasks?.length) {
       setList(tasks);
@@ -39,24 +42,35 @@ export const Tasks = () => {
   }, [tasks]);
 
   useEffect(() => {
-    if (search) {
+    if (search)
       setRenderList(list.filter((data) => data.title.startsWith(search)));
-    } else {
-      setRenderList(list);
-    }
+    else setRenderList(list);
   }, [search]);
- 
 
   const renderAllCards = () => {
     return renderList?.map((data) => {
-      return <Card key={data._id} data={data} deleteCard={handleDelete} editCardStatus={handleEditStatus}/>;
+      return (
+        <Card
+          key={data._id}
+          data={data}
+          deleteCard={handleDelete}
+          editCardStatus={handleEditStatus}
+        />
+      );
     });
   };
   const renderColumnCards = (text) => {
     return renderList
       ?.filter((data) => data.status === text)
       .map((data) => {
-        return <Card key={data._id} data={data} deleteCard={handleDelete} editCardStatus={handleEditStatus}/>;
+        return (
+          <Card
+            key={data._id}
+            data={data}
+            deleteCard={handleDelete}
+            editCardStatus={handleEditStatus}
+          />
+        );
       });
   };
 
@@ -72,10 +86,10 @@ export const Tasks = () => {
   const handleSearch = debounce((event) => {
     setSearch(event?.target?.value);
   }, 1000);
-  const handleDelete = (id) => dispatch(deleteTask(id))
-  const handleEditStatus = (data) => dispatch(editTaskStatus(data))
-  if(error){
-    return <h1>Something went wrong</h1>
+  const handleDelete = (id) => dispatch(deleteTask(id));
+  const handleEditStatus = (data) => dispatch(editTaskStatus(data));
+  if (error) {
+    return <h1>Something went wrong</h1>;
   }
   return (
     <>

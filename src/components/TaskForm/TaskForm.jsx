@@ -9,26 +9,18 @@ const TaskForm = () => {
   const initialValues = {
     title: "",
     status: "",
-    descriptionimportance: "",
+    importance: "",
     description: "",
   };
 
   const onSubmit = () => {
-    const { title, status, importance, description } = values;
-    fetch(`${REACT_APP_API_URL}task`, {
-      method: 'POST',
+    fetch(`https://goscrum-api.alkemy.org/task`, {
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json',
-        Authorization: 'Bearer ' + localStorage.getItem('token'),
+        "Content-Type": "application/json",
+        Authorization: "Bearer " + localStorage.getItem("token"),
       },
-      body: JSON.stringify({
-        task: {
-          title,
-          status,
-          importance,
-          description,
-        },
-      }),
+      body: JSON.stringify({ task: values }),
     })
       .then((response) => response.json())
       .then((data) => {
