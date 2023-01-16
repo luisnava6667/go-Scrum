@@ -14,19 +14,19 @@ const TaskForm = () => {
   };
 
   const onSubmit = () => {
-    fetch(`https://goscrum-api.alkemy.org/task`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: "Bearer " + localStorage.getItem("token"),
-      },
-      body: JSON.stringify({ task: values }),
+    fetch(`${REACT_APP_API_URL}/task`, {
+       method: 'POST',
+       headers: {
+          'Content-Type': 'application/json',
+          Authorization: 'Bearer ' + localStorage.getItem('token'),
+       },
+       body: JSON.stringify({ task: values }),
     })
-      .then((response) => response.json())
-      .then((data) => {
-        resetForm();
-        toast("Tu tarea se creo");
-      });
+       .then((response) => response.json())
+       .then((data) => {
+          resetForm();
+          toast('Tu tarea se creo');
+       });
   };
 
   const required = "* Campo obligatorio";

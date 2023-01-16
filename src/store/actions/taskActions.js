@@ -1,6 +1,6 @@
 import { TASKS_REQUEST, TASKS_SUCCESS, TASKS_FAILURE } from "../types";
 
-// const { REACT_APP_API_ENDPOINT: API_ENDPOINT } = process.env;
+const { REACT_APP_API_URL } = process.env;
 export const tasksRequest = () => ({
   type: TASKS_REQUEST,
 });
@@ -17,29 +17,29 @@ export const tasksFailure = (error) => ({
 
 export const getTasks = (path) => (dispatch) => {
   dispatch(tasksRequest());
-  fetch(`https://goscrum-api.alkemy.org/task/${path}`, {
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: "Bearer " + localStorage.getItem("token"),
-    },
+  fetch(`${REACT_APP_API_URL}/task/${path}`, {
+     headers: {
+        'Content-Type': 'application/json',
+        Authorization: 'Bearer ' + localStorage.getItem('token'),
+     },
   })
-    .then((response) => response.json())
-    .then((data) => {
-      dispatch(tasksSuccess(data.result));
-    })
-    .catch((error) => dispatch(tasksFailure(error)));
+     .then((response) => response.json())
+     .then((data) => {
+        dispatch(tasksSuccess(data.result));
+     })
+     .catch((error) => dispatch(tasksFailure(error)));
 };
 export const deleteTask = (id) => (dispatch) => {
-  fetch(`https://goscrum-api.alkemy.org/task/${id}`, {
-    method: "DELETE",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: "Bearer " + localStorage.getItem("token"),
-    },
+  fetch(`${REACT_APP_API_URL}/task/${id}`, {
+     method: 'DELETE',
+     headers: {
+        'Content-Type': 'application/json',
+        Authorization: 'Bearer ' + localStorage.getItem('token'),
+     },
   })
-    .then((response) => response.json())
-    .then((data) => dispatch(getTasks("")))
-    .catch((error) => dispatch(tasksFailure(error)));
+     .then((response) => response.json())
+     .then((data) => dispatch(getTasks('')))
+     .catch((error) => dispatch(tasksFailure(error)));
 };
 export const editTaskStatus = (data) => (dispatch) => {
   const statusArray = ["NEW", "IN PROGRESS", "FINISHED"];
@@ -49,22 +49,22 @@ export const editTaskStatus = (data) => (dispatch) => {
       ? 0
       : statusArray.indexOf(data.status) + 1;
 
-  fetch(`https://goscrum-api.alkemy.org/task/${data._id}`, {
-    method: "PATCH",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: "Bearer " + localStorage.getItem("token"),
-    },
-    body: JSON.stringify({
-      task: {
-        title: data.title,
-        importance: data.importance,
-        status: statusArray[newStatusIndex],
-        description: data.description,
-      },
-    }),
+  fetch(`${REACT_APP_API_URL}/task/${data._id}`, {
+     method: 'PATCH',
+     headers: {
+        'Content-Type': 'application/json',
+        Authorization: 'Bearer ' + localStorage.getItem('token'),
+     },
+     body: JSON.stringify({
+        task: {
+           title: data.title,
+           importance: data.importance,
+           status: statusArray[newStatusIndex],
+           description: data.description,
+        },
+     }),
   })
-    .then((response) => response.json())
-    .then((data) => dispatch(getTasks("")))
-    .catch((error) => dispatch(tasksFailure(error)));
+     .then((response) => response.json())
+     .then((data) => dispatch(getTasks('')))
+     .catch((error) => dispatch(tasksFailure(error)));
 };

@@ -7,7 +7,6 @@ import { Routes, Route, Navigate, useLocation } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
 import Registered from "./components/views/Registered/Registered";
 import { Donate } from "./components/views/Donate/Donate";
-
 const Error404 = lazy(() => import("./components/views/Error404/Error404"));
 const RequireAuth = ({ children }) => {
   if (!localStorage.getItem("token")) {
