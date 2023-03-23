@@ -10,7 +10,7 @@ Este proyecto es una aplicación web construida con React para la gestión de pr
 
 ## Uso
 
-Para ejecutar la aplicación en un servidor local, ejecuta el siguiente comando en la terminal: [yarn start]
+Para ejecutar la aplicación en un servidor local, ejecuta el siguiente comando en la terminal: `yarn start`
 
 Esto iniciará la aplicación en el puerto 3000 en tu navegador web.
 
